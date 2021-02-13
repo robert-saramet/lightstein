@@ -45,9 +45,9 @@ const int greenChannel = 1;
 const int blueChannel = 2;
 
 
-unsigned char redValue;
-unsigned char greenValue;
-unsigned char blueValue;
+short redValue;
+short greenValue;
+short blueValue;
 
 unsigned char RGB[3];
 short lampDelay;
@@ -143,20 +143,20 @@ void callback(char* topic, byte* message, unsigned int length){
     }
   }
   else if (String(topic) == "esp32/input/mode"){
-    lampMode = messageTemp(unsigned char).c_str;
+    lampMode = messageTemp.toInt();
   }
   else if (String(topic) == "esp32/input/color/red"){
-    redValue = unsigned char(messageTemp).c_str();
+    redValue = messageTemp.toInt();
     Serial.print("Red LED set to");
     Serial.println(messageTemp);
   }
   else if (String(topic) == "esp32/input/color/green"){
-    greenValue = unsigned char(messageTemp).c_str();
+    greenValue = messageTemp.toInt();
     Serial.print("Green LED set to");
     Serial.println(messageTemp);
   }
   else if (String(topic) == "esp32/input/color/blue"){
-    blueValue = unsigned char(messageTemp).c_str();
+    blueValue = messageTemp.toInt();
     Serial.print("Blue LED set to");
     Serial.println(messageTemp);
   }
