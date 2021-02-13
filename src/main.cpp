@@ -132,7 +132,7 @@ void callback(char* topic, byte* message, unsigned int length){
   Serial.println();
 
   if (String(topic) == "esp32/input/power"){
-    Serial.print("Changing power to ");
+    Serial.print("Changing output to ");
     if(messageTemp == "on"){
       Serial.println("on");
       power = 1;
@@ -214,7 +214,8 @@ void Clock(){
    display.showNumberDecEx(displaytime, 0b01000000, true);
    delay (1000);
    display.showNumberDec(displaytime, true);
-  
+   delay(1000);
+
    while(displaytime == alarm1) buzzer();
 }
 
