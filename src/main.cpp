@@ -242,13 +242,14 @@ void buzzer(){
 }
 
 
-
+/*
 void colon(){
   uint8_t segto;
   int value = 1244;
   segto = 0x80 | display.encodeDigit((value/ 100)%10);
   display.setSegments(&segto, 1, 1);
 }
+*/
 
 
 
