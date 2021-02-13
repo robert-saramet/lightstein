@@ -242,6 +242,7 @@ void buzzer(){
 }
 
 
+
 /*
 void colon(){
   uint8_t segto;
