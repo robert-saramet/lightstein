@@ -36,7 +36,7 @@ int value = 0;
 
 int alarm1 = 1100;
 bool power = 1;
-unsigned char lampMode = 1;
+unsigned char lampMode = 0;
 
 const int freq = 5000;
 const int resolution = 8;
@@ -59,16 +59,16 @@ void setup(){
 
   setup_wifi();
   client.setServer(mqtt_server, 1883);
-  //client.setCallback(callback);
+  client.setCallback(callback);
 
    if(! rtc.begin()){
     Serial.println("RTC not found");
     while (1);
   }
-  //if(rtc.lostPower()){
-    //Serial.println("RTC lost power, setting time");
+  if(rtc.lostPower()){
+    Serial.println("RTC lost power, setting time");
     rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
-  //}
+  }
 
   //rtc.adjust(DateTime(2021, 2, 12, 12, 15, 0));
 
@@ -132,7 +132,7 @@ void callback(char* topic, byte* message, unsigned int length){
   Serial.println();
 
   if (String(topic) == "esp32/input/power"){
-    Serial.print("Changing output to ");
+    Serial.print("Changing power to ");
     if(messageTemp == "on"){
       Serial.println("on");
       power = 1;
@@ -144,6 +144,8 @@ void callback(char* topic, byte* message, unsigned int length){
   }
   else if (String(topic) == "esp32/input/mode"){
     lampMode = messageTemp.toInt();
+    Serial.print("Lamp mode set to");
+    Serial.println(messageTemp);
   }
   else if (String(topic) == "esp32/input/color/red"){
     redValue = messageTemp.toInt();
@@ -175,7 +177,7 @@ void reconnect(){
       client.subscribe("esp32/input/color/blue");
     } else{
       Serial.print("failed, rc=");
-      Serial.print(client.state());
+      Serial.println(client.state());
       delay(5000);
     }
   }
