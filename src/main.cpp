@@ -35,6 +35,8 @@ char msg[50];
 int value = 0;
 
 int alarm1 = 1100;
+bool alarm1Enabled;
+
 bool power = 1;
 unsigned char lampMode = 0;
 
@@ -79,9 +81,6 @@ void setup(){
 
   pinMode(BUZZ, OUTPUT);
   pinMode(BUZZ_POW, OUTPUT);
-  //pinMode(RED_LED, OUTPUT);
-  //pinMode(GREEN_LED, OUTPUT);
-  //pinMode(BLUE_LED, OUTPUT);
 
   ledcSetup(redChannel, freq, resolution);
   ledcSetup(greenChannel, freq, resolution);
@@ -142,6 +141,21 @@ void callback(char* topic, byte* message, unsigned int length){
       power = 0;    
     }
   }
+  else if (String(topic) == "esp32/input/alarm1/enable"){
+    if(messageTemp == "true"){
+      alarm1Enabled = 1;
+      Serial.println("Alarm 1 enabled");
+    }
+    else if(messageTemp == "false"){
+      alarm1Enabled = 0;
+      Serial.println("Alarm 1 disabled");
+    }    
+  }
+  else if (String(topic) == "esp32/input/alarm1/time"){
+    alarm1 = messageTemp.toInt();
+    Serial.print("Set alarm 1 to ");
+    Serial.println(messageTemp);
+  }
   else if (String(topic) == "esp32/input/mode"){
     lampMode = messageTemp.toInt();
     Serial.print("Lamp mode set to");
@@ -172,6 +186,8 @@ void reconnect(){
       Serial.println("connected");
       client.subscribe("esp32/input/power");
       client.subscribe("esp32/input/mode");
+      client.subscribe("esp32/input/alarm1/enable");
+      client.subscribe("esp32/input/alarm1/time");
       client.subscribe("esp32/input/color/red");
       client.subscribe("esp32/input/color/green");
       client.subscribe("esp32/input/color/blue");
@@ -205,7 +221,6 @@ void MQTT(){
 }
 
 
-
 void Clock(){
    DateTime now = rtc.now();
    int displaytime = (now.hour() * 100) + now.minute();
@@ -216,7 +231,14 @@ void Clock(){
    display.showNumberDec(displaytime, true);
    delay(1000);
 
-   while(displaytime == alarm1) buzzer();
+   alarms(displaytime);
+}
+
+
+void alarms(int displayTime){
+  if (alarm1Enabled){
+    while(displayTime == alarm1) buzzer();
+  }
 }
 
 
@@ -245,7 +267,6 @@ void buzzer(){
 }
 
 
-
 /*
 void colon(){
   uint8_t segto;
@@ -254,7 +275,6 @@ void colon(){
   display.setSegments(&segto, 1, 1);
 }
 */
-
 
 
 void lamp(){
@@ -280,13 +300,11 @@ void lamp(){
 }
 
 
-
 void lampManual() {
   ledcWrite(redChannel, redValue);
   ledcWrite(greenChannel, greenValue);
   ledcWrite(blueChannel, blueValue);
 }
-
 
 
 void lampAuto() {
@@ -328,11 +346,9 @@ void lampAuto() {
 }
 
 
-
 void lampTemp() {
   
 }
-
 
 
 void lampFire(){
